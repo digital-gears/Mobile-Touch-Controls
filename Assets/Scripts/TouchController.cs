@@ -24,6 +24,7 @@ public class TouchController : MonoBehaviour
 
     private bool StaticTouch=false;
     private bool moving = false;
+    private bool zooming = false;
     private Transform _focus;
     private GameManager _gameManager;
     private CameraFollow _camFollow;
@@ -110,7 +111,7 @@ public class TouchController : MonoBehaviour
 
 
 
-    IEnumerator Swipe()
+    IEnumerator Swipe() //This loops in Swipe state
     {
         switch (Input.touchCount)
         {
@@ -156,7 +157,7 @@ public class TouchController : MonoBehaviour
         yield return 0;     
     }
 
-    IEnumerator TwoFingerIdle()
+    IEnumerator TwoFingerIdle() //This loops while thwo fingers are touching the screen but not moving enough to rotate or zoom
     {
         while (CurrentState == TouchState.TwoFingerIdle)
         {
@@ -200,7 +201,7 @@ public class TouchController : MonoBehaviour
         }
     }
 
-    private void ZoomOrRotate()
+    private void ZoomOrRotate() //This decides whether to rotate, zoom or do nothing
     {
          if(Vector3.Magnitude(lastTouch0-newTouch0)>TouchTolerance&& Vector3.Magnitude(lastTouch1 - newTouch1) > TouchTolerance)
         {
@@ -228,21 +229,32 @@ public class TouchController : MonoBehaviour
             {
                 case 1:
                     ChangeState(TouchState.Idle);
+                    zooming = false;
                     break;
                 case 2:
+
                     if (Input.GetTouch(0).phase == TouchPhase.Moved)
                     {
                         lastTouch0 = Camera.main.ScreenToViewportPoint(Input.GetTouch(0).position);
-                        Zooming();
                     }
                     if (Input.GetTouch(1).phase == TouchPhase.Moved)
                     {
                         lastTouch1 = Camera.main.ScreenToViewportPoint(Input.GetTouch(1).position);
+                    }
+                    if (zooming)
+                    {
                         Zooming();
                     }
+                    else
+                    {
+                        newTouch0 = lastTouch0;
+                        newTouch1 = lastTouch1;
+                    }
+                    zooming = true;
                     break;
                 default:
                     ChangeState(TouchState.Idle);
+                    zooming = false;
                     break;
             }
             yield return 0;
@@ -254,19 +266,19 @@ public class TouchController : MonoBehaviour
         float zoom = Vector3.Magnitude(lastTouch0 - lastTouch1) - Vector3.Magnitude(newTouch0 - newTouch1);
             //Vector3.Distance(lastTouch0, lastTouch1)- Vector3.Distance(newTouch0, newTouch1);
         Debug.Log(zoom);
-        if (_camFollow.zoom + zoom > 5)
+        if (_camFollow.zoom - zoom > 5)
         {
             _camFollow.zoom = 5f;
         }
         else
         {
-            if (_camFollow.zoom + zoom < 1)
+            if (_camFollow.zoom - zoom < 1)
             {
                 _camFollow.zoom = 1f;
             }
             else
             {
-                _camFollow.zoom += zoom;
+                _camFollow.zoom -= zoom;
             }
         }
     }
