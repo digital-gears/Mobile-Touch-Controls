@@ -7,7 +7,9 @@ using UnityEngine.EventSystems;
 
 public class TouchController : MonoBehaviour
 {
-    public float TouchTolerance = 0.05f;
+    
+    public Transform ScrollablePlane;
+    public float TouchTolerance = 0.5f;
     public float RotationSpeed = 1f;
     public float ZoomSpeed = 1f;
 
@@ -16,9 +18,15 @@ public class TouchController : MonoBehaviour
     private Vector2 newTouch0;
     private Vector2 newTouch1;
 
+    private Vector3 newTouchDrag;
+    private Vector3 lastTouchDrag;
+    private Vector3 direction;
+
     private bool StaticTouch=false;
     private bool moving = false;
+    private Transform _focus;
     private GameManager _gameManager;
+    private CameraFollow _camFollow;
 
     private enum TouchState
     {
@@ -34,6 +42,8 @@ public class TouchController : MonoBehaviour
     private void Start()
     {
         _gameManager = GameManager.instance;
+        _camFollow = gameObject.GetComponent<CameraFollow>();
+        _focus = _camFollow.target;
         StartCoroutine("FSM");
     }
 
@@ -108,17 +118,22 @@ public class TouchController : MonoBehaviour
                 switch (Input.GetTouch(0).phase)
                 {
                     case TouchPhase.Moved:
-                        newTouch0 = Input.GetTouch(0).position;
-                        if (moving)
+                        Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
+                        LayerMask mask = LayerMask.GetMask("Floor");
+                        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity,mask))
                         {
-                            RaycastHit hit;
-                            Ray ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
-                            if (Physics.Raycast(ray, out hit))
+                            if (moving)
                             {
-
+                                lastTouchDrag = hit.point;
+                                direction = newTouchDrag - lastTouchDrag;
+                                direction = new Vector3(direction.x, 0f, direction.z);
+                                _focus.position = _focus.position + direction;
+                            }
+                            else
+                            {
+                                newTouchDrag = hit.point;
                             }
                         }
-                        lastTouch0 = newTouch0;
                         moving = true;
                         break;
                     case TouchPhase.Stationary:
@@ -145,10 +160,58 @@ public class TouchController : MonoBehaviour
     {
         while (CurrentState == TouchState.TwoFingerIdle)
         {
-            Debug.Log("Two Finger Al pedo");
+            switch (Input.touchCount)
+            {
+                case 1:
+                    ChangeState(TouchState.Idle);
+                    break;
+                case 2:
+                    bool moved = false;
+                    if (Input.GetTouch(0).phase == TouchPhase.Began)
+                    {
+                        newTouch0 = Camera.main.ScreenToViewportPoint(Input.GetTouch(0).position);
+                        lastTouch0 = newTouch0;
+                    }
+                    if (Input.GetTouch(1).phase == TouchPhase.Began)
+                    {
+                        newTouch1 = Camera.main.ScreenToViewportPoint(Input.GetTouch(1).position);
+                        lastTouch0 = newTouch1;
+                    }
+                    if (Input.GetTouch(0).phase == TouchPhase.Moved)
+                    {
+                        lastTouch0 = Camera.main.ScreenToViewportPoint(Input.GetTouch(0).position);
+                        moved = true;
+                    }
+                    if (Input.GetTouch(1).phase == TouchPhase.Moved)
+                    {
+                        lastTouch1 = Camera.main.ScreenToViewportPoint(Input.GetTouch(1).position);
+                        moved = true;
+                    }
+                    if (moved)
+                    {
+                        ZoomOrRotate();
+                    }
+                    break;
+                default:
+                    ChangeState(TouchState.Idle);
+                    break;
+            }
             yield return 0;
         }
     }
+
+    private void ZoomOrRotate()
+    {
+         if(Vector3.Magnitude(lastTouch0-newTouch0)>TouchTolerance&& Vector3.Magnitude(lastTouch1 - newTouch1) > TouchTolerance)
+        {
+            ChangeState(TouchState.Zoom);
+        }
+        if ((Vector3.Magnitude(lastTouch0 - newTouch0) > 4*TouchTolerance && Vector3.Magnitude(lastTouch1 - newTouch1) < TouchTolerance*0.1f)|| (Vector3.Magnitude(lastTouch1 - newTouch1) > 4*TouchTolerance && Vector3.Magnitude(lastTouch0 - newTouch0) < TouchTolerance * 0.1f))
+        {
+            //ChangeState(TouchState.Rotate);
+        }
+    }
+
     IEnumerator Rotate()
     {
         while (CurrentState == TouchState.Rotate)
@@ -161,8 +224,50 @@ public class TouchController : MonoBehaviour
     {
         while (CurrentState == TouchState.Zoom)
         {
-            Debug.Log("Zoom");
+            switch (Input.touchCount)
+            {
+                case 1:
+                    ChangeState(TouchState.Idle);
+                    break;
+                case 2:
+                    if (Input.GetTouch(0).phase == TouchPhase.Moved)
+                    {
+                        lastTouch0 = Camera.main.ScreenToViewportPoint(Input.GetTouch(0).position);
+                        Zooming();
+                    }
+                    if (Input.GetTouch(1).phase == TouchPhase.Moved)
+                    {
+                        lastTouch1 = Camera.main.ScreenToViewportPoint(Input.GetTouch(1).position);
+                        Zooming();
+                    }
+                    break;
+                default:
+                    ChangeState(TouchState.Idle);
+                    break;
+            }
             yield return 0;
+        }
+    }
+
+    private void Zooming()
+    {
+        float zoom = Vector3.Magnitude(lastTouch0 - lastTouch1) - Vector3.Magnitude(newTouch0 - newTouch1);
+            //Vector3.Distance(lastTouch0, lastTouch1)- Vector3.Distance(newTouch0, newTouch1);
+        Debug.Log(zoom);
+        if (_camFollow.zoom + zoom > 5)
+        {
+            _camFollow.zoom = 5f;
+        }
+        else
+        {
+            if (_camFollow.zoom + zoom < 1)
+            {
+                _camFollow.zoom = 1f;
+            }
+            else
+            {
+                _camFollow.zoom += zoom;
+            }
         }
     }
 

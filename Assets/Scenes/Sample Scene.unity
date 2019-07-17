@@ -700,7 +700,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 33270297}
   angle: 0
-  zoom: 4
+  zoom: 3
 --- !u!114 &963194230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -713,7 +713,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716d2a059fa4aa64ab7617ac32ad7502, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TouchTolerance: 0.05
+  ScrollablePlane: {fileID: 1048977064}
+  TouchTolerance: 0.1
   RotationSpeed: 1
   ZoomSpeed: 1
 --- !u!1 &1032833894
@@ -820,7 +821,7 @@ GameObject:
   - component: {fileID: 1048977063}
   - component: {fileID: 1048977062}
   - component: {fileID: 1048977061}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Scrollable Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -931,6 +932,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Characters: []
+  SelectedCharacter: 0
 --- !u!4 &1197041794
 Transform:
   m_ObjectHideFlags: 0
