@@ -1,0 +1,10 @@
+All the adjustments are in the Main Camera, in the "Touch Controller" Script.
+
+The "Touch Tolerance" determines the sensitivity between selecting an object and moving the camera around, it's default is at 0.05f
+The "Border Limit" is the distance from the border of the Scrollable plane that limits the movement of the camera.
+	NOTE: The Scrollable Plane is the surface our player characters can walk. It has to be centered and if it's rezised, it must have it's navigation mesh rebaked.
+The Rotation Speed feels natural around 0.7f
+The Zoom Speed feels fine above 2f.
+If you want you can deactivate Rotate and set the fixed Camera Angle from the "Camera Follow" Script
+
+Roberto Cuartas 2019

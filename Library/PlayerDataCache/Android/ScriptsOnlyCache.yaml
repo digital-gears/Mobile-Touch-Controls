@@ -245,7 +245,7 @@ ScriptsOnlyBuild:
     className: ControlPlayableAsset
   - hash:
       serializedVersion: 2
-      Hash: c667cf8f2e715ff000cecb099ea77a82
+      Hash: 867590eb0e779282c10d0346e8621426
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: TouchController
@@ -510,4 +510,4 @@ ScriptsOnlyBuild:
   platform: 13
   scenePathNames:
   - Assets/Scenes/Sample Scene.unity
-  playerPath: D:/DIGITAL GEARS/Mobile-Touch-Controls/CameraTest2.apk
+  playerPath: D:/Users/manga/Mis Cosas/Proyectos Unity/Mobile Touch Controls/Mobile-Touch-Controls/CameraTest2.apk

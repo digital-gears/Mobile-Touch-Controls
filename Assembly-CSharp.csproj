@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\Character.cs" />
     <Compile Include="Assets\Scripts\GameManager.cs" />
     <Compile Include="Assets\Scripts\TouchController.cs" />
+    <None Include="Assets\Help\Touch Control.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Users/manga/Mis Cosas/Proyectos Unity/Mobile Touch Controls/Mobile-Touch-Controls/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

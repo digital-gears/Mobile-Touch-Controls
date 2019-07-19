@@ -714,9 +714,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ScrollablePlane: {fileID: 1048977064}
-  TouchTolerance: 0.1
-  RotationSpeed: 1
-  ZoomSpeed: 1
+  TouchTolerance: 0.05
+  BorderLimit: 3
+  RotationSpeed: 0.7
+  ZoomSpeed: 2
+  Rotate: 1
 --- !u!1 &1032833894
 GameObject:
   m_ObjectHideFlags: 0
@@ -897,7 +899,7 @@ Transform:
   m_GameObject: {fileID: 1048977060}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 1, z: 4}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
